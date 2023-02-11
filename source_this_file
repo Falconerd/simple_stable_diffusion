@@ -1,0 +1,27 @@
+#!/bin/bash
+
+# TODO: Check if python installed, etc
+# TODO: Check if fish/zsh/etc
+
+# setup venv
+python -m venv venv
+source venv/bin/activate
+
+# Check if AMD
+# TODO: Intel? Or do they just run CUDA fine?
+VGA_LINE=$(lspci | grep ' VGA ')
+IS_AMD=0
+if [[ "$VGA_LINE" == *"AMD"* ]]; then
+    IS_AMD=1
+fi
+
+if [[ IS_AMD -eq 1 ]]; then
+    echo "AMD GPU Detected. Installing ROCm torch, torchvision."
+    pip install torch torchvision --extra-index-url https://download.pytorch.org/whl/rocm5.2
+else
+    pip install torch torchvision
+fi
+
+pip install git+https://github.com/openai/CLIP.git
+
+pip install -r requirements.txt
